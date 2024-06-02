@@ -1,0 +1,8 @@
+[package]
+name = "superteam-earn-community"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+chrono = "0.4.38"
+tokio = { default-features = false, features = ["macros", "signal", "rt-multi-thread", "time"], version = "1.38.0" }
