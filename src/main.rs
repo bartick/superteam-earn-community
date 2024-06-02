@@ -1,6 +1,9 @@
 // Including the modules from the bot
 mod earn;
 
+// Files to be included
+mod environments;
+
 // Importing the modules as required
 use earn::watch::watch;
 
@@ -10,5 +13,6 @@ use earn::watch::watch;
 #[tokio::main]
 async fn main() {
     // Run the watch function
+    environments::load_env();
     watch().await;
 }

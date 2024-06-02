@@ -5,4 +5,5 @@ edition = "2021"
 
 [dependencies]
 chrono = "0.4.38"
+dotenv = "0.15.0"
 tokio = { default-features = false, features = ["macros", "signal", "rt-multi-thread", "time"], version = "1.38.0" }
