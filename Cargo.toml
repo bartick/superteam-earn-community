@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-chrono = "0.4.38"
+chrono = { version = "0.4.38", features = ["serde"] }
+diesel = { version = "2.2.0", features = ["chrono", "postgres", "serde_json", "uuid"] }
 dotenv = "0.15.0"
-tokio = { default-features = false, features = ["macros", "signal", "rt-multi-thread", "time"], version = "1.38.0" }
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+tokio = { default-features = false, features = ["macros", "signal", "rt-multi-thread", "time", "net"], version = "1.38.0" }
+uuid = { version = "1.8.0", features = ["v4", "serde"] }
