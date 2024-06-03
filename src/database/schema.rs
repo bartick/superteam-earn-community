@@ -18,7 +18,7 @@ diesel::table! {
         region -> Nullable<Text>,
         pocsocials -> Nullable<Text>,
         hackathonprize -> Nullable<Bool>,
-        timetocomplete -> Nullable<Int4>,
+        timetocomplete -> Nullable<Text>,
         winners -> Nullable<Jsonb>,
         sponsor -> Nullable<Jsonb>,
     }

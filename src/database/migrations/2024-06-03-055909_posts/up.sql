@@ -17,7 +17,7 @@ CREATE TABLE posts (
     pocSocials TEXT,
     hackathonprize BOOLEAN DEFAULT FALSE,
     -- check properly
-    timeToComplete INT,
+    timeToComplete TEXT,
     winners JSONB,
     sponsor JSONB
 );

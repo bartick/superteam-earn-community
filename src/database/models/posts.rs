@@ -6,8 +6,8 @@ use serde_json;
 
 use crate::database::schema::posts;
 
-#[derive(Insertable, Serialize)]
-#[table_name = "posts"]
+#[derive(Insertable, Serialize, Debug)]
+#[diesel(table_name = posts)]
 pub struct NewPost {
     pub id: Uuid,
     pub title: Option<String>,
@@ -25,7 +25,7 @@ pub struct NewPost {
     pub region: Option<String>,
     pub pocsocials: Option<String>,
     pub hackathonprize: Option<bool>,
-    pub timetocomplete: Option<i32>,
+    pub timetocomplete: Option<String>,
     pub winners: Option<serde_json::Value>,
     pub sponsor: Option<serde_json::Value>
 }
@@ -48,7 +48,7 @@ pub struct Post {
     pub region: Option<String>,
     pub pocsocials: Option<String>,
     pub hackathonprize: Option<bool>,
-    pub timetocomplete: Option<i32>,
+    pub timetocomplete: Option<String>,
     pub winners: Option<serde_json::Value>,
     pub sponsor: Option<serde_json::Value>
 }
