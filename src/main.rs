@@ -19,8 +19,8 @@ async fn main() {
     load_env();
 
     // Connect to the database
-    let _ = connect();
+    let mut connection = connect();
 
     // Run the watch function
-    watch().await;
+    watch(&mut connection).await;
 }
