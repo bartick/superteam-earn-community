@@ -1,6 +1,7 @@
 use chrono::{Days, Utc, NaiveDateTime};
 use uuid::Uuid;
-use diesel::{insert_into, PgConnection, RunQueryDsl};
+use diesel::{insert_into, pg::PgConnection, RunQueryDsl, r2d2::{Pool, ConnectionManager}};
+use tokio_cron_scheduler::{Job, JobScheduler};
 use crate::{database::{models::posts::NewPost, schema::posts}, earn::constants::EarnUrl};
 
 pub async fn fetch_data(url: &str) -> serde_json::Value {
@@ -90,9 +91,11 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
     true
 }
 
-pub async fn watch(connection: &mut PgConnection) {
+async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
     let now = Utc::now() - Days::new(5);
     let now = now.format("%Y-%m-%dT00:00:00.000Z").to_string();
+
+    let connection: &mut PgConnection = &mut pool.get().unwrap();
 
     // Get the project and bounty URLs
     let project_url = EarnUrl::project_url(&now);
@@ -110,4 +113,29 @@ pub async fn watch(connection: &mut PgConnection) {
             println!("Error adding data to the database {}", total_bountie);
         }
     }
+}
+
+pub async fn watch(pool: Pool<ConnectionManager<PgConnection>>) {
+    let scheduler = JobScheduler::new().await.unwrap_or_else(|e| {
+        panic!("Error creating scheduler: {}", e);
+    });
+
+    let schedule = "0 */6 * * * *"; // every 6 hours
+
+    let _ = scheduler.add(
+        Job::new_async(schedule, move |_uuid, _l| {
+            Box::pin({
+            let value = pool.clone();
+            async move {
+                check_earn(value).await;
+            }
+            })
+        }).unwrap_or_else(|e| {
+            panic!("Error adding job: {}", e);
+        })
+    ).await;
+
+    scheduler.start().await.unwrap_or_else(|e| {
+        panic!("Error starting scheduler: {}", e);
+    });
 }
