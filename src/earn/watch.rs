@@ -1,8 +1,8 @@
-use chrono::{Days, Utc, NaiveDateTime};
+use chrono::{Days, Utc};
 use uuid::Uuid;
 use diesel::{insert_into, pg::PgConnection, RunQueryDsl, r2d2::{Pool, ConnectionManager}};
 use tokio_cron_scheduler::{Job, JobScheduler};
-use crate::{database::{models::posts::NewPost, schema::posts}, earn::constants::EarnUrl};
+use crate::{database::{models::posts::NewPost, schema::posts, helpers::handler}, earn::constants::EarnUrl};
 
 pub async fn fetch_data(url: &str) -> serde_json::Value {
     // Fetch the data from the URL
@@ -20,61 +20,24 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
     
     let new_post = NewPost {
         id: Uuid::parse_str(data.get("id").unwrap().as_str().unwrap()).unwrap(),
-        title: Some(data.get("title").unwrap_or(&serde_json::Value::Null).to_string()),
-        slug: Some(data.get("slug").unwrap().to_string()),
-        deadline: Some(NaiveDateTime::parse_from_str(data.get("deadline").unwrap().as_str().unwrap(), "%Y-%m-%dT%H:%M:%S%.3fZ").unwrap()),
-        token: Some(data.get("token").unwrap().to_string()),
-        rewardamount: match data.get("rewardAmount") {
-            Some(reward) => Some(reward.as_u64().unwrap_or(0) as i32),
-            None => Some(0)
-        },
-        rewards: Some(data.get("rewards").unwrap().clone()),
-        skills: match data.get("skills") {
-            Some(skills) => {
-                let skills = skills.as_array().unwrap();
-                let mut skills_vec = Vec::new();
-                for skill in skills {
-                    skills_vec.push(Some(skill.clone()));
-                }
-                Some(skills_vec)
-            },
-            None => None
-        },
-        _type: Some(data.get("type").unwrap().to_string()),
-        requirements: match data.get("requirements") {
-            Some(requirements) => Some(requirements.to_string()),
-            None => None
-        },
-        totalpaymentsmade: match data.get("totalPaymentsMade") {
-            Some(totalpaymentsmade) => Some(totalpaymentsmade.as_u64().unwrap_or(0) as i32),
-            None => Some(0)
-        },
-        totalwinnersselected: match data.get("totalWinnersSelected") {
-            Some(totalwinnersselected) => Some(totalwinnersselected.as_u64().unwrap_or(0) as i32),
-            None => Some(0)
-        },
-        iswinnersannounced: match data.get("isWinnersAnnounced") {
-            Some(iswinnersannounced) => Some(iswinnersannounced.as_bool().unwrap_or(false)),
-            None => Some(false)
-        },
-        region: Some(data.get("region").unwrap().to_string()),
-        pocsocials: Some(data.get("pocSocials").unwrap().to_string()),
-        hackathonprize: match data.get("hackathonPrize") {
-            Some(hackathonprize) => Some(hackathonprize.as_bool().unwrap_or(false)),
-            None => Some(false)
-        },
-        timetocomplete: match data.get("timeToComplete") {
-            Some(time) => match time.as_str() {
-                Some(time) => Some(time.to_string()),
-                None => None
-            },
-            None => None
-        },
-        winners: match data.get("winners") {
-            Some(winners) => Some(winners.clone()),
-            None => None   
-        },
-        sponsor: Some(data.get("sponsor").unwrap().clone())
+        title: handler::parse_str(data, "title"),
+        slug: handler::parse_str(data, "slug"),
+        deadline: handler::parse_date(data, "deadline"),
+        token: handler::parse_str(data, "token"),
+        rewardamount: handler::parse_u64_as_i32(data, "rewardAmount"),
+        rewards: handler::parse_value(data, "rewards"),
+        skills: handler::parse_array(data, "skills"),
+        _type: handler::parse_str(data, "type"),
+        requirements: handler::parse_str(data, "requirements"),
+        totalpaymentsmade: handler::parse_u64_as_i32(data, "totalPaymentsMade"),
+        totalwinnersselected: handler::parse_u64_as_i32(data, "totalWinnersSelected"),
+        iswinnersannounced: handler::parse_bool(data, "isWinnersAnnounced"),
+        region: handler::parse_str(data, "region"),
+        pocsocials: handler::parse_str(data, "pocSocials"),
+        hackathonprize: handler::parse_bool(data, "hackathonPrize"),
+        timetocomplete: handler::parse_str(data, "timeToComplete"),
+        winners: handler::parse_value(data, "winners"),
+        sponsor: handler::parse_value(data, "sponsor")
     };
 
     let inserted_value = insert_into(posts::table)
