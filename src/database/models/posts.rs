@@ -6,7 +6,7 @@ use serde_json;
 
 use crate::database::schema::posts;
 
-#[derive(Debug, Insertable, AsChangeset, Serialize, Eq, PartialEq)]
+#[derive(Debug, Insertable, AsChangeset, Serialize)]
 #[diesel(table_name = posts)]
 pub struct NewPost {
     pub id: Uuid,
