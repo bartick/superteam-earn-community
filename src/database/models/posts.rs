@@ -1,12 +1,12 @@
 use chrono::NaiveDateTime;
-use diesel::prelude::{Insertable, Queryable, AsChangeset};
+use diesel::prelude::*;
 use serde::Serialize;
 use uuid::Uuid;
 use serde_json;
 
 use crate::database::schema::posts;
 
-#[derive(Insertable, Serialize, Debug)]
+#[derive(Debug, Insertable, AsChangeset, Serialize, Eq, PartialEq)]
 #[diesel(table_name = posts)]
 pub struct NewPost {
     pub id: Uuid,
@@ -30,7 +30,7 @@ pub struct NewPost {
     pub sponsor: Option<serde_json::Value>
 }
 
-#[derive(Debug, Queryable, AsChangeset, Serialize)]
+#[derive(Debug, Queryable, AsChangeset, Serialize, Eq, PartialEq)]
 pub struct Post {
     pub id: Uuid,
     pub title: Option<String>,
@@ -51,4 +51,30 @@ pub struct Post {
     pub timetocomplete: Option<String>,
     pub winners: Option<serde_json::Value>,
     pub sponsor: Option<serde_json::Value>
+}
+
+impl Into<Post> for NewPost {
+    fn into(self) -> Post {
+        Post {
+            id: self.id,
+            title: self.title,
+            slug: self.slug,
+            deadline: self.deadline,
+            token: self.token,
+            rewardamount: self.rewardamount,
+            rewards: self.rewards,
+            skills: self.skills,
+            _type: self._type,
+            requirements: self.requirements,
+            totalpaymentsmade: self.totalpaymentsmade,
+            totalwinnersselected: self.totalwinnersselected,
+            iswinnersannounced: self.iswinnersannounced,
+            region: self.region,
+            pocsocials: self.pocsocials,
+            hackathonprize: self.hackathonprize,
+            timetocomplete: self.timetocomplete,
+            winners: self.winners,
+            sponsor: self.sponsor
+        }
+    }
 }
