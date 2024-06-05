@@ -1,8 +1,8 @@
 use chrono::{Days, Utc};
 use uuid::Uuid;
-use diesel::{insert_into, pg::PgConnection, RunQueryDsl, r2d2::{Pool, ConnectionManager}};
+use diesel::{insert_into, pg::PgConnection, r2d2::{ConnectionManager, Pool}, RunQueryDsl, query_dsl::QueryDsl, ExpressionMethods};
 use tokio_cron_scheduler::{Job, JobScheduler};
-use crate::{database::{models::posts::NewPost, schema::posts, helpers::handler}, earn::constants::EarnUrl};
+use crate::{database::{models::posts::{NewPost, Post}, schema::posts, helpers::handler}, earn::constants::EarnUrl};
 
 pub async fn fetch_data(url: &str) -> serde_json::Value {
     // Fetch the data from the URL
@@ -40,15 +40,29 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
         sponsor: handler::parse_value(data, "sponsor")
     };
 
-    let inserted_value = insert_into(posts::table)
-        .values(&new_post)
-        .execute(connection);
+    // check if the data already exists
+    let available_value: Option<Post> = posts::dsl::posts.filter(posts::id.eq(new_post.id)).first::<Post>(connection).ok();
 
-    match inserted_value {
-        Ok(_) => println!("Data with id {} inserted successfully", new_post.id),
-        Err(e) => {
-            println!("Error inserting data: {}", e)
+    match available_value {
+        Some(post) => {
+            let new_post_as_post: Post = new_post.into(); // Convert new_post to type Post
+
+            if post != new_post_as_post {
+                println!("Updating post with id {:?}", post.id);
+                diesel::update(posts::dsl::posts.find(post.id))
+                    .set(&new_post_as_post)
+                    .execute(connection)
+                    .expect("Error updating data");
+            }
+
         },
+        None => {
+            println!("Inserted post with id {:?}", new_post.id);
+            insert_into(posts::dsl::posts)
+                .values(&new_post)
+                .execute(connection)
+                .expect("Error inserting data");
+        }
     }
 
     true
@@ -71,14 +85,14 @@ async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
     let total_bounties = projects.get("bounties").unwrap().as_array().unwrap().iter().chain(bounties.get("bounties").unwrap().as_array().unwrap().iter());
 
     for total_bountie in total_bounties {
-        let added = add_data_to_database(connection, total_bountie).await;
-        if !added {
-            println!("Error adding data to the database {}", total_bountie);
-        }
+        let _ = add_data_to_database(connection, total_bountie).await;
     }
 }
 
 pub async fn watch(pool: Pool<ConnectionManager<PgConnection>>) {
+
+    check_earn(pool.clone()).await;
+
     let scheduler = JobScheduler::new().await.unwrap_or_else(|e| {
         panic!("Error creating scheduler: {}", e);
     });
