@@ -47,7 +47,7 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
         Some(post) => {
             let new_post_as_post: Post = new_post.into(); // Convert new_post to type Post
 
-            if post != new_post_as_post {
+            if post.ne(&new_post_as_post) {
                 println!("Updating post with id {:?}", post.id);
                 diesel::update(posts::dsl::posts.find(post.id))
                     .set(&new_post_as_post)
@@ -91,7 +91,12 @@ async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
 
 pub async fn watch(pool: Pool<ConnectionManager<PgConnection>>) {
 
+    println!("Loading current post before starting scheduler...");
+
     check_earn(pool.clone()).await;
+
+    println!("Current post loaded...");
+    println!("Starting scheduler...");
 
     let scheduler = JobScheduler::new().await.unwrap_or_else(|e| {
         panic!("Error creating scheduler: {}", e);
