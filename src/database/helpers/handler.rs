@@ -23,7 +23,7 @@ pub fn parse_date(data: &Value, key: &str) -> Option<NaiveDateTime> {
 pub fn parse_bool(data: &Value, key: &str) -> Option<bool> {
     match data.get(key) {
         Some(value) => Some(value.as_bool().unwrap_or(false)),
-        None => None
+        None => Some(false)
     }
 }
 
