@@ -1,5 +1,5 @@
 use chrono::NaiveDateTime;
-use diesel::prelude::*;
+use diesel::prelude::{Insertable, Queryable, AsChangeset};
 use serde::Serialize;
 use uuid::Uuid;
 use serde_json;
