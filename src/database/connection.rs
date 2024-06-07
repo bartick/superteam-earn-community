@@ -6,7 +6,7 @@ use diesel::{pg::PgConnection, r2d2::{Pool, ConnectionManager}};
  * This is the database URL
  */
 pub(crate) static DATABASE_URL: Lazy<String> = Lazy::new(|| {
-    env::var("DISCORD_TOKEN").expect("Expected DISCORD_TOKEN in the environment")
+    env::var("DATABASE_URL").expect("Expected DATABASE_URL in the environment")
 });
 
 /**
