@@ -1,0 +1,15 @@
+[package]
+name = "dc_commands"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+
+[dependencies]
+tokio = { default-features = false, features = ["macros","rt-multi-thread"], version = "1.38.0" }
+twilight-gateway = "0.15.4"
+twilight-model = "0.15.4"
+twilight-util = { version="0.15.4", features = ["builder"]}
+twilight-http = { version = "0.15.4", features = ["native"] }
+dotenv = "0.15.0"
+once_cell = "1.19.0"
