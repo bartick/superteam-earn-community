@@ -32,7 +32,7 @@ async fn main() {
     }
 
     // Run the watch function
-    watch(pool).await;
+    watch(pool.clone()).await;
 
-    connect().await;
+    connect(pool).await;
 }
