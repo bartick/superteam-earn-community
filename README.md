@@ -37,7 +37,7 @@ If you do not have the database setup yet, you need to install PostgreSQL and cr
 You need to install postgresql on your machine. You can follow the instructions on the [official website](https://www.postgresql.org/download/).
 And install postgresql client psql (linux) or libpq (macos) or pgAdmin (windows).
 
-Finally: Migration and Database Setup 
+### 2. Migration and Database Setup 
 ```bash
 # install diesel_cli
 cargo install diesel_cli --no-default-features --features postgres
