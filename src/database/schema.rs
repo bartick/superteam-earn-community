@@ -1,6 +1,14 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    discord_settings (id) {
+        id -> Int8,
+        bounty_id -> Nullable<Int8>,
+        project_id -> Nullable<Int8>,
+    }
+}
+
+diesel::table! {
     posts (id) {
         id -> Uuid,
         title -> Nullable<Text>,
@@ -23,3 +31,8 @@ diesel::table! {
         sponsor -> Nullable<Jsonb>,
     }
 }
+
+diesel::allow_tables_to_appear_in_same_query!(
+    discord_settings,
+    posts,
+);
