@@ -1,6 +1,7 @@
 // Including the modules from the bot
 mod earn;
 mod database;
+mod discord;
 
 // Files to be included
 mod environments;
@@ -9,6 +10,7 @@ mod environments;
 use earn::watch::watch;
 use environments::load_env;
 use database::connection::get_connection_pool;
+use discord::connection::connect;
 
 /**
  * This function is the entry point of the bot
@@ -32,4 +34,6 @@ async fn main() {
 
     // Run the watch function
     watch(pool).await;
+
+    connect().await;
 }
