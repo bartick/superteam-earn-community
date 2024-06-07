@@ -1,4 +1,5 @@
 use twilight_gateway::{Intents, Shard, ShardId};
+use diesel::{r2d2::{Pool, ConnectionManager}, pg::PgConnection};
 use crate::events::handle_event;
 use crate::utils::constants::TOKEN;
 
@@ -8,7 +9,7 @@ use crate::utils::constants::TOKEN;
  * and listen for events
  * 
  */
-pub async fn connect() {
+pub async fn connect(pool: Pool<ConnectionManager<PgConnection>>) {
     let intents = Intents::GUILD_INTEGRATIONS;
     // Initialize the first and only shard in use by a bot.
     let mut shard = Shard::new(ShardId::ONE, TOKEN.to_string(), intents);
@@ -35,8 +36,10 @@ pub async fn connect() {
         // You'd normally want to spawn a new tokio task for each event and
         // handle the event there to not block the shard.
 
+        let pass_pool = pool.clone();
+
         tokio::spawn(async move {
-            handle_event(event).await
+            handle_event(event, pass_pool).await
         });
     }
 }

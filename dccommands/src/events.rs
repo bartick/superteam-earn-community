@@ -1,11 +1,12 @@
 use twilight_gateway::Event;
 use twilight_model::{application::interaction::InteractionType, http::interaction::{InteractionResponse, InteractionResponseType}};
+use diesel::{r2d2::{Pool, ConnectionManager}, pg::PgConnection};
 
 use crate::interaction::handle_interaction;
 
 use crate::utils::get::get_client;
 
-pub async fn handle_event(event: Event) {
+pub async fn handle_event(event: Event, pool: Pool<ConnectionManager<PgConnection>>) {
     let client = get_client();
     match event {
         Event::Ready(_) => {
@@ -29,7 +30,7 @@ pub async fn handle_event(event: Event) {
                         .unwrap();
                 },
                 InteractionType::ApplicationCommand => {
-                    handle_interaction(client, interaction).await;
+                    handle_interaction(client, interaction, pool).await;
                 },
                 InteractionType::ApplicationCommandAutocomplete => {
                     println!("Command autocomplete received");
