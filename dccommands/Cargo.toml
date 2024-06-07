@@ -7,6 +7,7 @@ edition = "2021"
 
 [dependencies]
 tokio = { default-features = false, features = ["macros","rt-multi-thread"], version = "1.38.0" }
+diesel = { version = "2.2.0", features = ["postgres", "r2d2"] }
 twilight-gateway = "0.15.4"
 twilight-model = "0.15.4"
 twilight-util = { version="0.15.4", features = ["builder"]}
