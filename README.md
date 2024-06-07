@@ -28,6 +28,24 @@ cargo build --release
 cargo run --release
 ```
 
-### Note: For Superteam
+## Extra (Installation)
+
+If you do not have the database setup yet, you need to install PostgreSQL and create a database.
+
+### 1. Install PostgreSQL
+
+You need to install postgresql on your machine. You can follow the instructions on the [official website](https://www.postgresql.org/download/).
+And install postgresql client psql (linux) or libpq (macos) or pgAdmin (windows).
+
+Finally: Migration and Database Setup 
+```bash
+# install diesel_cli
+cargo install diesel_cli --no-default-features --features postgres
+
+# create database
+diesel migration run
+```
+
+#### Note: For Superteam
 
 Hey Superteam, if you're reading this, I've successfully reached out to you. This bot is my contribution to the community, designed for those who don't want to miss any bounties or projects while they're away from their PC or your website. Personally, I missed many earning opportunities because I couldn't check the website frequently, and the Discord bot on the Earn Discord only notifies every 7 days, which wasn't enough for me. That's why I created this bot.
