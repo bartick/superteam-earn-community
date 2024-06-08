@@ -275,7 +275,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "diesel",
- "once_cell",
  "serde",
  "serde_json",
  "uuid",
