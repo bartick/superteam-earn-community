@@ -1,8 +1,10 @@
+use std::borrow::Borrow;
+
 use twilight_http::Client;
 use twilight_model::{application::interaction::application_command::{CommandData, CommandDataOption, CommandOptionValue}, channel::message::MessageFlags, gateway::payload::incoming::InteractionCreate, http::interaction::{InteractionResponse, InteractionResponseType}};
 use twilight_util::builder::{embed::{EmbedBuilder, EmbedFieldBuilder}, InteractionResponseDataBuilder};
 use diesel::{r2d2::{Pool, ConnectionManager}, pg::PgConnection};
-use crate::utils::{get::{get_channel_id, get_settings}, set::set_settings};
+use crate::utils::{get::{get_channel_id, get_settings}, set::set_settings, requests::set_message_loading};
 
 fn all_channel(pool: Pool<ConnectionManager<PgConnection>>, guild_id: i64, choise: CommandDataOption) -> [i64; 2] {
     let channel = get_channel_id(choise) as i64;
@@ -41,6 +43,9 @@ fn show_channel(pool: Pool<ConnectionManager<PgConnection>>, guild_id: i64) -> [
 }
 
 pub(crate) async fn execute(client: Client, interaction: Box<InteractionCreate>, data: Box<CommandData>, pool: Pool<ConnectionManager<PgConnection>>) {
+
+    set_message_loading(client.borrow(), interaction.clone()).await;
+
     let content = String::from("The Settings for the bot are:");
 
     let subcommand = data.options[0].name.clone();
@@ -91,27 +96,22 @@ pub(crate) async fn execute(client: Client, interaction: Box<InteractionCreate>,
         }
     }
 
-    let response: InteractionResponse = InteractionResponse {
-        kind: InteractionResponseType::ChannelMessageWithSource,
-        data: Some(InteractionResponseDataBuilder::new()
-            .embeds(
-                vec![
-                    EmbedBuilder::new()
-                        .title("Settings")
-                        .description(content)
-                        .field(EmbedFieldBuilder::new("Bounty Channel: ", format!("<#{}>", bounty_channel)).inline().build())
-                        .field(EmbedFieldBuilder::new("Project Channel: ", format!("<#{}>", project_channel)).inline().build())
-                        .color(0x00ff00)
-                        .build()
-                ]
-            )
-            .flags(MessageFlags::EPHEMERAL)
-            .build()
-        ),
-    };
-
     client
         .interaction(interaction.application_id)
-        .create_response(interaction.id, &interaction.token, &response)
-        .await.unwrap();
+        .update_response(&interaction.token)
+        .embeds(Some(
+            &vec![
+                EmbedBuilder::new()
+                    .title("Settings")
+                    .description(content)
+                    .field(EmbedFieldBuilder::new("Bounty Channel: ", format!("<#{}>", bounty_channel)).inline().build())
+                    .field(EmbedFieldBuilder::new("Project Channel: ", format!("<#{}>", project_channel)).inline().build())
+                    .color(0x00ff00)
+                    .build()
+            ]
+        ))
+        .expect("Failed to create a message")
+        .await
+        .expect("Failed to send message");
+        // .create_response(interaction.id, &interaction.token, &response)
 }
