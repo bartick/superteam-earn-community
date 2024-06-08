@@ -2,8 +2,8 @@
 # see https://diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "src/database/schema.rs"
+file = "database/src/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
 [migrations_directory]
-dir = "/Users/bartickmaiti/Documents/Coding/Rust/superteam-earn-community/src/database/migrations"
+dir = "/Users/bartickmaiti/Documents/Coding/Rust/superteam-earn-community/database/src/migrations"
