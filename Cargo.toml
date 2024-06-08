@@ -4,18 +4,18 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace]
-members = [
+members = [ 
+  "database",
   "dccommands"
 ]
 
 [dependencies]
 dc_commands = { path = "dccommands" }
+database = { path = "database" }
 chrono = { version = "0.4.38", features = ["serde"] }
-diesel = { version = "2.2.0", features = ["chrono", "postgres", "r2d2", "serde_json", "uuid"] }
 dotenv = "0.15.0"
-once_cell = "1.19.0"
+diesel = { version = "2.2.0", features = ["postgres", "r2d2"] }
 reqwest = "0.12.4"
-serde = { version = "1.0.203", features = ["derive"] }
 serde_json = "1.0.117"
 tokio = { default-features = false, features = ["macros", "signal", "rt-multi-thread", "time", "net"], version = "1.38.0" }
 tokio-cron-scheduler = "0.10.2"

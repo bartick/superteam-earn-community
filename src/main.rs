@@ -1,6 +1,5 @@
 // Including the modules from the bot
 mod earn;
-mod database;
 
 // Files to be included
 mod environments;
@@ -19,8 +18,10 @@ async fn main() {
     // load the environment variables
     load_env();
 
+    let database_url = std::env::var("DATABASE_URL").expect("Expected DATABASE_URL in the environment");
+
     // Connect to the database
-    let pool = get_connection_pool();
+    let pool = get_connection_pool(database_url);
 
     // check if the connection is successful
     match pool.get() {

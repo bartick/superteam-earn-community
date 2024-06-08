@@ -270,9 +270,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "database"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "once_cell",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
 name = "dc_commands"
 version = "0.1.0"
 dependencies = [
+ "database",
  "diesel",
  "dotenv",
  "once_cell",
@@ -1507,12 +1520,11 @@ name = "superteam-earn-community"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "database",
  "dc_commands",
  "diesel",
  "dotenv",
- "once_cell",
  "reqwest",
- "serde",
  "serde_json",
  "tokio",
  "tokio-cron-scheduler",

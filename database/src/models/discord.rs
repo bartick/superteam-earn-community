@@ -1,7 +1,7 @@
 use diesel::prelude::{Insertable, Queryable, AsChangeset};
 use serde::Serialize;
 
-use crate::database::schema::discord_settings;
+use crate::schema::discord_settings;
 
 #[derive(Debug, Insertable, AsChangeset, Serialize)]
 #[diesel(table_name = discord_settings)]

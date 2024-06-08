@@ -4,7 +4,7 @@ use serde::Serialize;
 use uuid::Uuid;
 use serde_json;
 
-use crate::database::schema::posts;
+use crate::schema::posts;
 
 #[derive(Debug, Insertable, AsChangeset, Serialize)]
 #[diesel(table_name = posts)]

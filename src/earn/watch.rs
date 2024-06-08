@@ -2,7 +2,8 @@ use chrono::{Days, Utc};
 use uuid::Uuid;
 use diesel::{insert_into, pg::PgConnection, r2d2::{ConnectionManager, Pool}, RunQueryDsl, query_dsl::QueryDsl, ExpressionMethods};
 use tokio_cron_scheduler::{Job, JobScheduler};
-use crate::{database::{models::posts::{NewPost, Post}, schema::posts, helpers::handler}, earn::constants::EarnUrl};
+use crate::earn::constants::EarnUrl;
+use database::{models::posts::{NewPost, Post}, schema::posts, helpers::handler};
 
 pub async fn fetch_data(url: &str) -> serde_json::Value {
     // Fetch the data from the URL
