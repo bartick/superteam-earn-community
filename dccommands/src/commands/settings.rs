@@ -5,7 +5,7 @@ pub(crate) fn register(name: &str) -> Command {
     CommandBuilder::new(name, "Settings of the discord bot", CommandType::ChatInput)
         .default_member_permissions(Permissions::ADMINISTRATOR | Permissions::MANAGE_GUILD)
         .option(
-            SubCommandBuilder::new("sll", "Set same channel for bounties and projects")
+            SubCommandBuilder::new("all", "Set same channel for bounties and projects")
                 .option(
                     ChannelBuilder::new("channel", "Set the channel for bounties and projects")
                         .required(true)
