@@ -6,6 +6,7 @@ edition = "2021"
 [lib]
 
 [dependencies]
+database = { path = "../database" }
 tokio = { default-features = false, features = ["macros","rt-multi-thread"], version = "1.38.0" }
 diesel = { version = "2.2.0", features = ["postgres", "r2d2"] }
 twilight-gateway = "0.15.4"
