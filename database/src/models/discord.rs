@@ -11,7 +11,7 @@ pub struct NewDiscordSettings {
     pub project_id: Option<i64>
 }
 
-#[derive(Debug, Queryable, AsChangeset, Serialize, Eq, PartialEq)]
+#[derive(Debug, Queryable, AsChangeset, Serialize, PartialEq)]
 #[diesel(table_name = discord_settings)]
 pub struct DiscordSettings {
     pub id: i64,
