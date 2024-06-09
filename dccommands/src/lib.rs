@@ -5,3 +5,4 @@ mod handler;
 mod helper;
 
 pub mod connection;
+pub mod worker;
