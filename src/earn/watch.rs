@@ -1,4 +1,5 @@
 use chrono::{Days, Utc};
+use dc_commands::worker::report::report as dcreport;
 use uuid::Uuid;
 use diesel::{insert_into, pg::PgConnection, r2d2::{ConnectionManager, Pool}, RunQueryDsl, query_dsl::QueryDsl, ExpressionMethods};
 use tokio_cron_scheduler::{Job, JobScheduler};
@@ -17,7 +18,7 @@ pub async fn fetch_data(url: &str) -> serde_json::Value {
     body
 }
 
-pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_json::Value) -> bool {
+pub async fn add_data_to_database(pool: Pool<ConnectionManager<PgConnection>>, data: &serde_json::Value) -> bool {
     
     let new_post = NewPost {
         id: Uuid::parse_str(data.get("id").unwrap().as_str().unwrap()).unwrap(),
@@ -41,6 +42,8 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
         sponsor: handler::parse_value(data, "sponsor")
     };
 
+    let connection: &mut PgConnection = &mut pool.get().unwrap();
+
     // check if the data already exists
     let available_value: Option<Post> = posts::dsl::posts.filter(posts::id.eq(new_post.id)).first::<Post>(connection).ok();
 
@@ -59,10 +62,14 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
         },
         None => {
             println!("Inserted post with id {:?}", new_post.id);
-            insert_into(posts::dsl::posts)
+            let inseted_post = insert_into(posts::dsl::posts)
                 .values(&new_post)
-                .execute(connection)
+                .get_result::<Post>(connection)
                 .expect("Error inserting data");
+
+            tokio::spawn(async move {
+                dcreport(pool.clone(), inseted_post).await;
+            });
         }
     }
 
@@ -72,8 +79,6 @@ pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_js
 async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
     let now = Utc::now() - Days::new(5);
     let now = now.format("%Y-%m-%dT00:00:00.000Z").to_string();
-
-    let connection: &mut PgConnection = &mut pool.get().unwrap();
 
     // Get the project and bounty URLs
     let project_url = EarnUrl::project_url(&now);
@@ -86,7 +91,7 @@ async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
     let total_bounties = projects.get("bounties").unwrap().as_array().unwrap().iter().chain(bounties.get("bounties").unwrap().as_array().unwrap().iter());
 
     for total_bountie in total_bounties {
-        let _ = add_data_to_database(connection, total_bountie).await;
+        let _ = add_data_to_database(pool.clone(), total_bountie).await;
     }
 }
 
