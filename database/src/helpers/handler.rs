@@ -5,11 +5,7 @@ pub fn parse_str(data: &Value, key: &str) -> Option<String> {
     match data.get(key) {
         Some(value) => {
             // remove the quotes from the string
-            if value.is_string() {
-                Some(value.as_str().unwrap().replace("\"", ""))
-            } else {
-                Some(value.to_string())
-            }
+            Some(value.as_str().unwrap_or("\"").replace("\"", ""))
         },
         None => None
     }
