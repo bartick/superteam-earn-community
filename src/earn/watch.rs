@@ -18,7 +18,7 @@ pub async fn fetch_data(url: &str) -> serde_json::Value {
     body
 }
 
-pub async fn add_data_to_database(pool: Pool<ConnectionManager<PgConnection>>, data: &serde_json::Value) -> bool {
+pub async fn add_data_to_database(connection: &mut PgConnection, data: &serde_json::Value) -> Option<Post> {
     
     let new_post = NewPost {
         id: Uuid::parse_str(data.get("id").unwrap().as_str().unwrap()).unwrap(),
@@ -42,8 +42,6 @@ pub async fn add_data_to_database(pool: Pool<ConnectionManager<PgConnection>>, d
         sponsor: handler::parse_value(data, "sponsor")
     };
 
-    let connection: &mut PgConnection = &mut pool.get().unwrap();
-
     // check if the data already exists
     let available_value: Option<Post> = posts::dsl::posts.filter(posts::id.eq(new_post.id)).first::<Post>(connection).ok();
 
@@ -58,6 +56,7 @@ pub async fn add_data_to_database(pool: Pool<ConnectionManager<PgConnection>>, d
                     .execute(connection)
                     .expect("Error updating data");
             }
+            None
 
         },
         None => {
@@ -66,14 +65,9 @@ pub async fn add_data_to_database(pool: Pool<ConnectionManager<PgConnection>>, d
                 .values(&new_post)
                 .get_result::<Post>(connection)
                 .expect("Error inserting data");
-
-            tokio::spawn(async move {
-                dcreport(pool.clone(), inseted_post).await;
-            });
+            Some(inseted_post)
         }
     }
-
-    true
 }
 
 async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
@@ -90,9 +84,32 @@ async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
 
     let total_bounties = projects.get("bounties").unwrap().as_array().unwrap().iter().chain(bounties.get("bounties").unwrap().as_array().unwrap().iter());
 
+    let mut bounty_posts: Vec<Post> = Vec::new();
+    let mut project_posts: Vec<Post> = Vec::new();
+
+    let connection: &mut PgConnection = &mut pool.get().unwrap();
+
     for total_bountie in total_bounties {
-        let _ = add_data_to_database(pool.clone(), total_bountie).await;
+        let success_post = add_data_to_database(connection, total_bountie).await;
+        match success_post {
+            Some(post) => {
+                if post._type == Some(String::from("bounty")) {
+                    bounty_posts.push(post);
+                } else if post._type == Some(String::from("project")) {
+                    project_posts.push(post);
+                } else {}
+            },
+            None => {}
+        }
     }
+
+    if bounty_posts.is_empty() && project_posts.is_empty() {
+        return;
+    }
+
+    tokio::spawn(async move {
+        dcreport(pool, bounty_posts, project_posts).await;
+    });
 }
 
 pub async fn watch(pool: Pool<ConnectionManager<PgConnection>>) {
