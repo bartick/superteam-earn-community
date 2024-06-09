@@ -30,7 +30,7 @@ pub struct NewPost {
     pub sponsor: Option<serde_json::Value>
 }
 
-#[derive(Debug, Queryable, AsChangeset, Serialize, Eq, PartialEq)]
+#[derive(Debug, Queryable, AsChangeset, Serialize, Eq, PartialEq, Clone)]
 pub struct Post {
     pub id: Uuid,
     pub title: Option<String>,
