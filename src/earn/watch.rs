@@ -125,7 +125,7 @@ pub async fn watch(pool: Pool<ConnectionManager<PgConnection>>) {
         panic!("Error creating scheduler: {}", e);
     });
 
-    let schedule = "0 */2 * * *"; // every 2 hours
+    let schedule = "0 0 */2 * * *"; // every 2 hours
 
     let _ = scheduler.add(
         Job::new_async(schedule, move |_uuid, _l| {
