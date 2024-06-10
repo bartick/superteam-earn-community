@@ -1,5 +1,6 @@
-use twilight_gateway::{Intents, Shard, ShardId};
+use twilight_gateway::{ConfigBuilder, Intents, Shard, ShardId};
 use diesel::{r2d2::{Pool, ConnectionManager}, pg::PgConnection};
+use twilight_model::gateway::{payload::outgoing::update_presence::UpdatePresencePayload, presence::{Activity, ActivityType, Status}};
 use crate::events::handle_event;
 use crate::utils::constants::TOKEN;
 
@@ -11,10 +12,31 @@ use crate::utils::constants::TOKEN;
  */
 pub async fn connect(pool: Pool<ConnectionManager<PgConnection>>) {
     let intents = Intents::GUILD_INTEGRATIONS;
-    // Initialize the first and only shard in use by a bot.
-    let mut shard = Shard::new(ShardId::ONE, TOKEN.to_string(), intents);
+
+    let config = ConfigBuilder::new(TOKEN.to_string(), intents)
+        .presence(UpdatePresencePayload::new(vec![Activity{
+            name: String::from("superteam earn"),
+            kind: ActivityType::Watching,
+            application_id: None,
+            assets: None,
+            created_at: None,
+            details: None,
+            flags: None,
+            instance: None,
+            party: None,
+            secrets: None,
+            state: None,
+            timestamps: None,
+            url: None,
+            buttons: vec![],
+            emoji: None,
+            id: None,
+        }], false, Some(0), Status::Online).unwrap())
+        .build();
 
     println!("discord started shard");
+
+    let mut shard = Shard::with_config(ShardId::ONE, config);
 
     loop {
         let event = match shard.next_event().await {
