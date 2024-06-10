@@ -46,6 +46,14 @@ cargo install diesel_cli --no-default-features --features postgres
 diesel migration run
 ```
 
+## Invite the bot to your server
+
+1. Discord: [Bounty Bot](https://discord.com/oauth2/authorize?client_id=1249051949471629434&permissions=137439463488&integration_type=0&scope=bot+applications.commands)
+
+2. Telegram: Bounty Bot (coming soon)
+
+
+
 #### Note: For Superteam
 
 Hey Superteam, if you're reading this, I've successfully reached out to you. This bot is my contribution to the community, designed for those who don't want to miss any bounties or projects while they're away from their PC or your website. Personally, I missed many earning opportunities because I couldn't check the website frequently, and the Discord bot on the Earn Discord only notifies every 7 days, which wasn't enough for me. That's why I created this bot.
