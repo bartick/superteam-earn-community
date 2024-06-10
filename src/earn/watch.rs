@@ -130,10 +130,11 @@ pub async fn watch(pool: Pool<ConnectionManager<PgConnection>>) {
     let _ = scheduler.add(
         Job::new_async(schedule, move |_uuid, _l| {
             Box::pin({
-            let value = pool.clone();
-            async move {
-                check_earn(value).await;
-            }
+                println!("Checking earn at {}", Utc::now().format("%Y-%m-%d %H:%M:%S").to_string());
+                let value = pool.clone();
+                async move {
+                    check_earn(value).await;
+                }
             })
         }).unwrap_or_else(|e| {
             panic!("Error adding job: {}", e);
