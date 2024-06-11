@@ -1,0 +1,7 @@
+[package]
+name = "telebot"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+teloxide = { version = "0.12.2", features = []}
