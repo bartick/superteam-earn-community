@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-teloxide = { version = "0.12.2", features = []}
+teloxide = { version = "0.12.2", features = ["ctrlc_handler", "nightly", "macros"]}
