@@ -2,8 +2,21 @@ use teloxide::{prelude::*, types::{ChatKind, PublicChatKind}};
 
 use crate::handlers::chat::{private_chat_handler, public_chat_channel_handler, public_chat_group_handler, public_chat_supergroup_handler};
 
+/**
+ * Run the bot
+ * 
+ * @param token: String
+ * 
+ * @return ()
+ * 
+ * @example run(token).await
+ * 
+ * @description This function is used to run the bot
+ */
 pub async fn run(token: String) {
     let bot = Bot::new(token);
+
+    println!("Running telegram bot...");
 
     teloxide::repl(bot, |bot: Bot, message: Message| async move {
         let channel_type = message.clone().chat.kind;
