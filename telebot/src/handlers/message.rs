@@ -1,6 +1,16 @@
 use teloxide::{prelude::Message, types::{MediaKind, MessageEntityKind, MessageKind}};
 
-
+/**
+ * Command handler function for messages
+ * 
+ * @param message: Message
+ * 
+ * @return Option<String>
+ * 
+ * @example command_handler(message)
+ * 
+ * @description This function is used to handle messages and return the command if it is a command
+ */
 pub fn command_handler(message: Message) -> Option<String> {
     let message_kind = message.kind;
 
@@ -10,8 +20,6 @@ pub fn command_handler(message: Message) -> Option<String> {
 
             match media_kind {
                 MediaKind::Text(msg_cmd) => {
-
-                    println!("cmd: {:?}", msg_cmd.text);
 
                     if msg_cmd.entities.is_empty() {
                         return None;
