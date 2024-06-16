@@ -20,7 +20,7 @@ pub async fn private_chat_handler(bot:Bot, message: Message) {
         return
     }
 
-    let cmd = Command::from_str(&cmd.unwrap());
+    let cmd = Command::from_str(&cmd.unwrap().split("@").collect::<Vec<&str>>()[0]);
     
     if cmd.is_none() {
         return
@@ -59,7 +59,7 @@ pub async fn public_chat_channel_handler(bot:Bot, message: Message) {
         return
     }
 
-    let cmd = Command::from_str(&cmd.unwrap().split(" ").collect::<Vec<&str>>()[0]);
+    let cmd = Command::from_str(&cmd.unwrap().split("@").collect::<Vec<&str>>()[0]);
 
     if cmd.is_none() {
         return
@@ -98,7 +98,7 @@ pub async fn public_chat_group_handler(bot:Bot, message: Message) {
         return
     }
 
-    let cmd = Command::from_str(&cmd.unwrap().split(" ").collect::<Vec<&str>>()[0]);
+    let cmd = Command::from_str(&cmd.unwrap().split("@").collect::<Vec<&str>>()[0]);
     
     if cmd.is_none() {
         return
@@ -137,7 +137,7 @@ pub async fn public_chat_supergroup_handler(bot:Bot, message: Message) {
         return
     }
 
-    let cmd = Command::from_str(&cmd.unwrap().split(" ").collect::<Vec<&str>>()[0]);
+    let cmd = Command::from_str(&cmd.unwrap().split("@").collect::<Vec<&str>>()[0]);
     
     if cmd.is_none() {
         return
