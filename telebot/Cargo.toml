@@ -4,4 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-teloxide = { version = "0.12.2", features = ["ctrlc_handler", "nightly", "macros"]}
+teloxide = { version = "0.12.2", features = ["ctrlc_handler", "nightly", "macros", "cache-me"]}
+tokio = { default-features = false, features = ["macros","rt-multi-thread"], version = "1.38.0" }
+dotenv = "0.15.0"
+once_cell = "1.19.0"
