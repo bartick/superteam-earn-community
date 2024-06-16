@@ -1,4 +1,6 @@
-use teloxide::{prelude::Bot, requests::Requester, types::ChatId};
+use teloxide::{payloads::SendMessageSetters, requests::Requester, types::ChatId};
+
+use crate::constants::BOT;
 
 /**
  * Handle help command
@@ -12,12 +14,18 @@ use teloxide::{prelude::Bot, requests::Requester, types::ChatId};
  * 
  * @description This function is used to handle the help command
  */
-pub async fn handle_help(bot: Bot, chat_id: ChatId) {
+pub async fn handle_help(chat_id: ChatId, thread_id: Option<i32>) {
     let help_message = "Welcome to the help menu 🤖
 
 /start - Start the bot sending you notifications
 /stop - Stop the bot sending you notifications
 /help - Display this help message";
 
-    bot.send_message(chat_id, help_message).await.expect("Failed to send message");
+    let mut message_to_send = BOT.send_message(chat_id, help_message);
+
+    if thread_id.is_some() {
+        message_to_send = message_to_send.message_thread_id(thread_id.unwrap());
+    }
+
+    message_to_send.await.expect("Failed to send message");
 }
