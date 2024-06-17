@@ -81,7 +81,8 @@ async fn send_message(channel_id: u64, posts: Vec<Post>) {
 
         for handle in handles {
             handle.await.unwrap();
-            tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
         }
+
+        tokio::time::sleep(tokio::time::Duration::from_secs(1)).await;
     }
 }
