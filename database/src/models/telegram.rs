@@ -11,7 +11,7 @@ pub struct NewTelegram {
     pub can_send_messages: bool,
 }
 
-#[derive(Debug, Queryable, AsChangeset, Serialize, PartialEq)]
+#[derive(Debug, Queryable, AsChangeset, Serialize, PartialEq, Clone)]
 #[diesel(table_name = telegram)]
 pub struct Telegram {
     pub id: i64,
