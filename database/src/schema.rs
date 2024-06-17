@@ -32,7 +32,16 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    telegram (id) {
+        id -> Int8,
+        thread_id -> Nullable<Int4>,
+        can_send_messages -> Bool,
+    }
+}
+
 diesel::allow_tables_to_appear_in_same_query!(
     discord_settings,
     posts,
+    telegram,
 );
