@@ -9,7 +9,7 @@ use earn::watch::watch;
 use environments::load_env;
 use database::connection::get_connection_pool;
 use dc_commands::connection::connect;
-use telebot::run;
+use telebot::connection::run;
 
 /**
  * This function is the entry point of the bot
@@ -36,17 +36,16 @@ async fn main() {
     // Run the watch function
     watch(pool.clone()).await;
 
-    let telegram_token = std::env::var("TELOXIDE_TOKEN").expect("Expected TELOXIDE_TOKEN in the environment");
-
     let discord_pool = pool.clone();
     
     tokio::spawn(async move {
         connect(discord_pool).await;
     });
 
+    let telegram_pool = pool.clone();
 
     tokio::spawn(async move {
-        run(telegram_token).await;
+        run(telegram_pool).await;
     });
 
     tokio::signal::ctrl_c().await.unwrap();
