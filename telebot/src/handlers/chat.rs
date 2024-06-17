@@ -20,9 +20,7 @@ pub async fn private_chat_handler(message: Message) {
         return
     }
 
-    let cmd = Command::from_str(&cmd.unwrap().split(|c| {
-        c == ' ' || c == '@'
-    }).collect::<Vec<&str>>()[0]);
+    let cmd = Command::from_str(&cmd.unwrap().split(' ').collect::<Vec<&str>>()[0]);
     
     if cmd.is_none() {
         return
