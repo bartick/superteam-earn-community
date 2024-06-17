@@ -50,7 +50,7 @@ diesel migration run
 
 1. Discord: [Bounty Bot](https://discord.com/oauth2/authorize?client_id=1249051949471629434&permissions=137439463488&integration_type=0&scope=bot+applications.commands)
 
-2. Telegram: Bounty Bot (coming soon)
+2. Telegram: [Bounty Bot](https://t.me/superbountybot)
 
 
 
