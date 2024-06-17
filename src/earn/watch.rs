@@ -1,5 +1,6 @@
 use chrono::{Days, Utc};
 use dc_commands::worker::report::report as dcreport;
+use telebot::bounty::message::report as telereport;
 use uuid::Uuid;
 use diesel::{insert_into, pg::PgConnection, r2d2::{ConnectionManager, Pool}, RunQueryDsl, query_dsl::QueryDsl, ExpressionMethods};
 use tokio_cron_scheduler::{Job, JobScheduler};
@@ -107,8 +108,20 @@ async fn check_earn(pool: Pool<ConnectionManager<PgConnection>>) {
         return;
     }
 
+    let dc_pool = pool.clone();
+    let dc_bounty_posts = bounty_posts.clone();
+    let dc_project_posts = project_posts.clone();
+
     tokio::spawn(async move {
-        dcreport(pool, bounty_posts, project_posts).await;
+        dcreport(dc_pool, dc_bounty_posts, dc_project_posts).await;
+    });
+
+    let telegram_pool = pool.clone();
+    let telegram_bounty_posts = bounty_posts.clone();
+    let telegram_project_posts = project_posts.clone();
+
+    tokio::spawn(async move {
+        telereport(telegram_pool, telegram_bounty_posts, telegram_project_posts).await;
     });
 }
 
