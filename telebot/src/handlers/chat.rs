@@ -1,6 +1,7 @@
+use diesel::{r2d2::{ConnectionManager, Pool}, PgConnection};
 use teloxide::{prelude::Message, requests::Requester};
 
-use crate::{commands::{help::handle_help, _404::handle_404}, constants::BOT, handlers::message::command_handler, helpers::commands::Command};
+use crate::{commands::{help, start, stop, _404}, constants::BOT, handlers::message::command_handler, helpers::commands::Command};
 
 /**
  * Private chat handler function
@@ -30,13 +31,13 @@ pub async fn private_chat_handler(message: Message) {
 
     match cmd.unwrap() {
         Command::Start => {
-            handle_404(chat_id, None).await;
+            _404::handle_404(chat_id, None).await;
         },
         Command::Stop => {
-            handle_404(chat_id, None).await;
+            _404::handle_404(chat_id, None).await;
         },
         Command::Help => {
-            handle_help(chat_id, None).await;
+            help::handle_help(chat_id, None).await;
         }
     }
 }
@@ -53,7 +54,7 @@ pub async fn private_chat_handler(message: Message) {
  * 
  * @description This function is used to handle public chat messages from the supergroup
  */
-pub async fn public_chat_supergroup_handler(message: Message) {
+pub async fn public_chat_supergroup_handler(pool: Pool<ConnectionManager<PgConnection>>, message: Message) {
     let cmd = command_handler(message.clone());
     if cmd.is_none() {
         return
@@ -86,13 +87,13 @@ pub async fn public_chat_supergroup_handler(message: Message) {
 
     match cmd.unwrap() {
         Command::Start => {
-            handle_404(chat_id, thread_id).await;
+            start::handle_start(pool, chat_id, thread_id).await;
         },
         Command::Stop => {
-            handle_404(chat_id, thread_id).await;
+            stop::handle_stop(pool, chat_id, thread_id).await;
         },
         Command::Help => {
-            handle_help(chat_id, thread_id).await;
+            help::handle_help(chat_id, thread_id).await;
         }
     }
 }
