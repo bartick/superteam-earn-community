@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM rust:latest as builder
+FROM rustlang/rust:nightly as builder
 
 # Install dependencies required for Diesel CLI
 RUN apt-get update && apt-get install -y \
