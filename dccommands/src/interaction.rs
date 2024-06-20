@@ -14,7 +14,7 @@ pub async fn handle_interaction(client: Client, context: Box<InteractionCreate>,
                     let handler = CommandRegister::from_str(data.name.as_str());
                     match handler {
                         Some(ctx) => match ctx {
-                            CommandRegister::Ping => ping::execute(client, context, data).await,
+                            CommandRegister::Ping => ping::execute(client, context).await,
                             CommandRegister::Settings => settings::execute(client, context, data, pool).await,
                         },
                         _ => {

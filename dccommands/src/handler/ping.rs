@@ -1,43 +1,24 @@
+use std::time::Instant;
+
 use twilight_http::Client;
-use twilight_model::{application::interaction::application_command::{CommandData, CommandOptionValue}, channel::message::MessageFlags, gateway::payload::incoming::InteractionCreate, http::interaction::{InteractionResponse, InteractionResponseType}};
-use twilight_util::builder::InteractionResponseDataBuilder;
+use twilight_model::gateway::payload::incoming::InteractionCreate;
 
-pub(crate) async fn execute(client: Client, interaction: Box<InteractionCreate>, data: Box<CommandData>) {
-    let mut content = String::from("Pong!");
+use crate::utils::requests::set_message_loading;
 
-    for options in data.options {
-        if options.name == "message" { 
-            match options.value {
-                CommandOptionValue::String(value) => {
-                    content = value;
-                },
-                _ => {}
-            } 
-        }
-        else if options.name == "uppercase" {
-            match options.value.clone() {
-                CommandOptionValue::Boolean(value) => {
-                    if value {
-                        content = content.to_uppercase();
-                    }
-                },
-                _ => {}
-            }
-        }
-        else {}
-    }
+pub(crate) async fn execute(client: Client, interaction: Box<InteractionCreate>) {
+    let start = Instant::now();
 
-    let response: InteractionResponse = InteractionResponse {
-        kind: InteractionResponseType::ChannelMessageWithSource,
-        data: Some(InteractionResponseDataBuilder::new()
-            .content(content)
-            .flags(MessageFlags::EPHEMERAL)
-            .build()
-        ),
-    };
+    set_message_loading(&client, interaction.clone()).await;
+
+    let duration = start.elapsed();
+
+    let message = format!("🏓 WS: `{}`ms", duration.as_millis());
 
     client
         .interaction(interaction.application_id)
-        .create_response(interaction.id, &interaction.token, &response)
-        .await.unwrap();
+        .update_response(&interaction.token)
+        .content(Some(&message))
+        .expect("Failed to send message")
+        .await
+        .expect("Failed to send message");
 }
