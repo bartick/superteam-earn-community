@@ -1,6 +1,18 @@
 # EARN BOT
 
-This is an unofficial earn bot that monitors the Superteam Earn website and notifies you when a new bounty or project becomes available.
+This is an unofficial earn bot that monitors the Superteam Earn website and notifies you when a new bounty or project becomes available. 
+
+I made the bot for myself because I missed many earning opportunities because I couldn't check the website frequently. The Discord bot on the Earn Discord only notifies every 7 days, which wasn't enough for me. That's why I created this bot. 
+
+It has a max delay of 2 hours as for someone who is constantly checking the website giving them a edge.
+
+It has a Discord and Telegram bot. You can invite the bot to your server and get notified when a new bounty or project becomes available.
+
+## Invite the bot to your server
+
+1. Discord: [Bounty Bot](https://discord.com/oauth2/authorize?client_id=1249051949471629434)
+
+2. Telegram: [Bounty Bot](https://t.me/superbountybot)
 
 ## Install and Run
 
@@ -45,13 +57,21 @@ cargo install diesel_cli --no-default-features --features postgres
 # create database
 diesel migration run
 ```
+### Docker
 
-## Invite the bot to your server
+You can also run the bot using docker. You need to have docker installed on your machine.
 
-1. Discord: [Bounty Bot](https://discord.com/oauth2/authorize?client_id=1249051949471629434)
+```bash
+mkdir earn-bot
+cd earn-bot
+touch .env
 
-2. Telegram: [Bounty Bot](https://t.me/superbountybot)
+# enter your environment variables in .env file
+# copy the content of .env.example to .env file
 
+docker pull bartick/earn-bot:latest
+docker run -d -v ${pwd}/.env:/app/.env --name earn-bot bartick/earn-bot:latest
+```
 
 
 #### Note: For Superteam
